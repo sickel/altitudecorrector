@@ -31,6 +31,12 @@ from .resources import *
 from .altitudecorrector_dialog import AltitudecorrectorDialog
 import os.path
 
+from qgis.PyQt.QtWidgets import QGraphicsScene, QGraphicsView
+# QApplication, ,QCheckBox, QFileDialog
+
+from qgis.core import QgsVectorLayer, QgsFeature, QgsField, QgsGeometry, QgsPointXY, QgsField, QgsProject, QgsMapLayerProxyModel, QgsCoordinateTransform, QgsCoordinateReferenceSystem, QgsFieldProxyModel
+
+import processing
 
 class Altitudecorrector:
     """QGIS Plugin Implementation."""
@@ -61,7 +67,7 @@ class Altitudecorrector:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&Altitudecorrector')
+        self.menu = self.tr(u'&Spectral data')
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -90,7 +96,7 @@ class Altitudecorrector:
         callback,
         enabled_flag=True,
         add_to_menu=True,
-        add_to_toolbar=True,
+        add_to_toolbar=False,
         status_tip=None,
         whats_this=None,
         parent=None):
@@ -157,6 +163,12 @@ class Altitudecorrector:
 
         return action
 
+    def updatemeasfields(self):
+        self.dlg.FCBMeasure.setLayer(self.dlg.LCBMeasure.currentLayer())
+        self.dlg.FCBAltitude.setLayer(self.dlg.LCBMeasure.currentLayer())
+
+
+
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
@@ -166,10 +178,22 @@ class Altitudecorrector:
             text=self.tr(u'Altitude correction'),
             callback=self.run,
             parent=self.iface.mainWindow())
-
+        self.dlg = AltitudecorrectorDialog()
+        self.dlg.LCBArea.setFilters(QgsMapLayerProxyModel.PolygonLayer)
+        self.dlg.FCBArea.setLayer(self.dlg.LCBArea.currentLayer())
+        #self.dlg.LCBArea.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.dlg.LCBArea.layerChanged.connect(lambda: self.dlg.FCBArea.setLayer(self.dlg.LCBArea.currentLayer()))   
+        self.dlg.LCBMeasure.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.updatemeasfields()
+        self.dlg.FCBMeasure.setLayer(self.dlg.LCBArea.currentLayer())
+        self.dlg.FCBMeasure.setFilters(QgsFieldProxyModel.Numeric)
+        self.dlg.FCBAltitude.setFilters(QgsFieldProxyModel.Numeric)
+        self.dlg.LCBMeasure.layerChanged.connect(self.updatemeasfields)   
+        
         # will be set False in run()
         self.first_start = True
 
+    
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -178,8 +202,35 @@ class Altitudecorrector:
                 self.tr(u'&Altitudecorrector'),
                 action)
             self.iface.removeToolBarIcon(action)
-
-
+    
+    def valueandalt(self,layer):
+        result=[]
+        self.measure=[]
+        self.altitude=[]
+        features=layer.getFeatures()
+        valueidx = layer.fields().indexFromName('dose1')
+        altidx=layer.fields().indexFromName('altitude')
+        for feat in features:
+            attrs=feat.attributes()
+            #result.append([attrs[altidx],attrs[valueidx]])
+            self.altitude.append(attrs[altidx])
+            self.measure.append(attrs[valueidx])
+        return([self.altitude,self.measure])
+    
+    def altplot(self,dataset,graphicsview):
+        w=graphicsview.width()*0.75
+        h=graphicsview.height()*0.75
+        
+        scene=QGraphicsScene()
+        graphicsview.setScene(scene)
+        xspan=[min(dataset[0]),max(dataset[0])]
+        yspan=[min(dataset[1]),max(dataset[1])]
+        xfact=(xspan[1]-xspan[0])/w
+        yfact=(yspan[1]-yspan[0])/h
+        rad=2
+        for alt,meas in zip(dataset[0],dataset[1]):
+            scene.addEllipse((alt-xspan[0])/xfact,h-(meas-yspan[0])/yfact,rad*2,rad*2)
+    
     def run(self):
         """Run method that performs all the real work"""
 
@@ -187,7 +238,6 @@ class Altitudecorrector:
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start == True:
             self.first_start = False
-            self.dlg = AltitudecorrectorDialog()
 
         # show the dialog
         self.dlg.show()
@@ -197,4 +247,9 @@ class Altitudecorrector:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            pass
+            waterlayer=QgsProject.instance().mapLayersByName('Waterdata')[0]
+            landlayer=QgsProject.instance().mapLayersByName('Landdata')[0]
+            waterdata=self.valueandalt(waterlayer)
+            landdata=self.valueandalt(landlayer)
+            self.altplot(waterdata,self.dlg.gwWater)
+            self.altplot(landdata,self.dlg.gwLand)
