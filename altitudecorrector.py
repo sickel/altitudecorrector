@@ -164,9 +164,15 @@ class Altitudecorrector:
         return action
 
     def updatemeasfields(self):
-        self.dlg.FCBMeasure.setLayer(self.dlg.LCBMeasure.currentLayer())
-        self.dlg.FCBAltitude.setLayer(self.dlg.LCBMeasure.currentLayer())
+        self.dlg.fcbMeasure.setLayer(self.dlg.lcbMeasure.currentLayer())
+        self.dlg.fcbAltitude.setLayer(self.dlg.lcbMeasure.currentLayer())
 
+    def runcalculation(self):
+        caliblayer=QgsProject.instance().mapLayersByName('Intersection')[0]
+        waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())
+        landdata=self.extractdata(caliblayer,self.dlg.leLand.text())
+        self.altplot(waterdata,self.dlg.gwWater)
+        self.altplot(landdata,self.dlg.gwLand)
 
 
     def initGui(self):
@@ -179,17 +185,17 @@ class Altitudecorrector:
             callback=self.run,
             parent=self.iface.mainWindow())
         self.dlg = AltitudecorrectorDialog()
-        self.dlg.LCBArea.setFilters(QgsMapLayerProxyModel.PolygonLayer)
-        self.dlg.FCBArea.setLayer(self.dlg.LCBArea.currentLayer())
-        #self.dlg.LCBArea.setFilters(QgsMapLayerProxyModel.PointLayer)
-        self.dlg.LCBArea.layerChanged.connect(lambda: self.dlg.FCBArea.setLayer(self.dlg.LCBArea.currentLayer()))   
-        self.dlg.LCBMeasure.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.dlg.lcbArea.setFilters(QgsMapLayerProxyModel.PolygonLayer)
+        self.dlg.fcbArea.setLayer(self.dlg.lcbArea.currentLayer())
+        #self.dlg.lcbArea.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.dlg.lcbArea.layerChanged.connect(lambda: self.dlg.fcbArea.setLayer(self.dlg.lcbArea.currentLayer()))   
+        self.dlg.lcbMeasure.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.updatemeasfields()
-        self.dlg.FCBMeasure.setLayer(self.dlg.LCBArea.currentLayer())
-        self.dlg.FCBMeasure.setFilters(QgsFieldProxyModel.Numeric)
-        self.dlg.FCBAltitude.setFilters(QgsFieldProxyModel.Numeric)
-        self.dlg.LCBMeasure.layerChanged.connect(self.updatemeasfields)   
-        
+        self.dlg.fcbMeasure.setLayer(self.dlg.lcbArea.currentLayer())
+        self.dlg.fcbMeasure.setFilters(QgsFieldProxyModel.Numeric)
+        self.dlg.fcbAltitude.setFilters(QgsFieldProxyModel.Numeric)
+        self.dlg.lcbMeasure.layerChanged.connect(self.updatemeasfields)   
+        self.dlg.pbRun.clicked.connect(self.runcalculation)
         # will be set False in run()
         self.first_start = True
 
@@ -203,24 +209,25 @@ class Altitudecorrector:
                 action)
             self.iface.removeToolBarIcon(action)
     
-    def valueandalt(self,layer):
-        result=[]
+
+    def extractdata(self,layer,key):
         self.measure=[]
         self.altitude=[]
         features=layer.getFeatures()
-        valueidx = layer.fields().indexFromName('dose1')
-        altidx=layer.fields().indexFromName('altitude')
+        valueidx = layer.fields().indexFromName(self.dlg.fcbMeasure.currentField())
+        altidx=layer.fields().indexFromName(self.dlg.fcbAltitude.currentField())
+        typeidx=layer.fields().indexFromName(self.dlg.fcbArea.currentField())
         for feat in features:
             attrs=feat.attributes()
-            #result.append([attrs[altidx],attrs[valueidx]])
-            self.altitude.append(attrs[altidx])
-            self.measure.append(attrs[valueidx])
+            if key == None or attrs[typeidx]==key: 
+                self.altitude.append(attrs[altidx])
+                self.measure.append(attrs[valueidx])
         return([self.altitude,self.measure])
+    
     
     def altplot(self,dataset,graphicsview):
         w=graphicsview.width()*0.75
         h=graphicsview.height()*0.75
-        
         scene=QGraphicsScene()
         graphicsview.setScene(scene)
         xspan=[min(dataset[0]),max(dataset[0])]
@@ -247,9 +254,4 @@ class Altitudecorrector:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            waterlayer=QgsProject.instance().mapLayersByName('Waterdata')[0]
-            landlayer=QgsProject.instance().mapLayersByName('Landdata')[0]
-            waterdata=self.valueandalt(waterlayer)
-            landdata=self.valueandalt(landlayer)
-            self.altplot(waterdata,self.dlg.gwWater)
-            self.altplot(landdata,self.dlg.gwLand)
+            pass
