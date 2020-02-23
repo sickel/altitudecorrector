@@ -31,6 +31,8 @@ from .resources import *
 from .altitudecorrector_dialog import AltitudecorrectorDialog
 import os.path
 
+import numpy
+
 from qgis.PyQt.QtWidgets import QGraphicsScene, QGraphicsView
 # QApplication, ,QCheckBox, QFileDialog
 
@@ -167,14 +169,33 @@ class Altitudecorrector:
         self.dlg.fcbMeasure.setLayer(self.dlg.lcbMeasure.currentLayer())
         self.dlg.fcbAltitude.setLayer(self.dlg.lcbMeasure.currentLayer())
 
+
+    def fit(self,data,log=False):
+        x=numpy.array(data[0])
+        y=numpy.array(data[1])
+        if log:
+            fit=numpy.polyfit(x, numpy.log(y), 1, w=numpy.sqrt(y))
+        else:
+            fit=numpy.polyfit(x, y, 1, w=numpy.sqrt(y))
+        return(fit)
+    
     def runcalculation(self):
         caliblayer=QgsProject.instance().mapLayersByName('Intersection')[0]
-        waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())
-        landdata=self.extractdata(caliblayer,self.dlg.leLand.text())
-        self.altplot(waterdata,self.dlg.gwWater)
-        self.altplot(landdata,self.dlg.gwLand)
-
-
+        self.waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())
+        self.landdata=self.extractdata(caliblayer,self.dlg.leLand.text())
+        waterfit=self.fit(self.waterdata)
+        print(waterfit)
+        # ntb=4.284670
+        # ntbfactor=0.001743
+        # ntb0=ntb+ntbfactor
+        # expfactor=-0.006383
+        # gmmdown=(value1-ntb)*math.exp(expfactor)/math.exp(expfactor*value2)+ ntb0
+        self.altplot(self.landdata,self.dlg.gwLand)
+        self.landdata[0]=self.landdata[0]-waterfit[1]
+        print(self.fit(self.landdata,True))
+        self.altplot(self.waterdata,self.dlg.gwWater)
+        self.altplot(self.landdata,self.dlg.gwLand)
+        
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
@@ -187,18 +208,18 @@ class Altitudecorrector:
         self.dlg = AltitudecorrectorDialog()
         self.dlg.lcbArea.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.dlg.fcbArea.setLayer(self.dlg.lcbArea.currentLayer())
-        #self.dlg.lcbArea.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.dlg.lcbArea.layerChanged.connect(lambda: self.dlg.fcbArea.setLayer(self.dlg.lcbArea.currentLayer()))   
         self.dlg.lcbMeasure.setFilters(QgsMapLayerProxyModel.PointLayer)
-        self.updatemeasfields()
         self.dlg.fcbMeasure.setLayer(self.dlg.lcbArea.currentLayer())
         self.dlg.fcbMeasure.setFilters(QgsFieldProxyModel.Numeric)
         self.dlg.fcbAltitude.setFilters(QgsFieldProxyModel.Numeric)
+        self.dlg.fcbAltitude.setLayer(self.dlg.lcbArea.currentLayer())
         self.dlg.lcbMeasure.layerChanged.connect(self.updatemeasfields)   
         self.dlg.pbRun.clicked.connect(self.runcalculation)
         # will be set False in run()
         self.first_start = True
-
+        self.updatemeasfields()
+       
     
 
     def unload(self):
@@ -225,18 +246,31 @@ class Altitudecorrector:
         return([self.altitude,self.measure])
     
     
+    
+    
+    
     def altplot(self,dataset,graphicsview):
-        w=graphicsview.width()*0.75
-        h=graphicsview.height()*0.75
+        w=graphicsview.width()
+        h=graphicsview.height()
+        air=39
+        #bt=airborne
+        plotw=w-air*2
+        ploth=h-air*2
         scene=QGraphicsScene()
         graphicsview.setScene(scene)
         xspan=[min(dataset[0]),max(dataset[0])]
         yspan=[min(dataset[1]),max(dataset[1])]
-        xfact=(xspan[1]-xspan[0])/w
-        yfact=(yspan[1]-yspan[0])/h
+        xfact=(xspan[1]-xspan[0])/plotw
+        yfact=(yspan[1]-yspan[0])/ploth
         rad=2
+        xaxy=float(ploth+rad*2)
+        yaxx=float(air-1)
+        scene.addLine(yaxx,xaxy,yaxx,air/2) # Y-axis
+        scene.addLine(yaxx,xaxy,float(w-air/2),xaxy) # X-axis
         for alt,meas in zip(dataset[0],dataset[1]):
-            scene.addEllipse((alt-xspan[0])/xfact,h-(meas-yspan[0])/yfact,rad*2,rad*2)
+            x=(alt-xspan[0])/xfact+air
+            y=ploth-(meas-yspan[0])/yfact
+            scene.addEllipse(x,y,rad*2,rad*2)
     
     def run(self):
         """Run method that performs all the real work"""

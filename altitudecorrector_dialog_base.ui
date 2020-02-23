@@ -16,7 +16,7 @@
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>210</x>
      <y>380</y>
      <width>341</width>
      <height>32</height>
@@ -29,7 +29,7 @@
     <enum>Qt::Horizontal</enum>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+    <set>QDialogButtonBox::Close</set>
    </property>
   </widget>
   <widget class="QTabWidget" name="tabWidget">
@@ -66,7 +66,7 @@
      <widget class="QLineEdit" name="leWater">
       <property name="geometry">
        <rect>
-        <x>320</x>
+        <x>360</x>
         <y>70</y>
         <width>113</width>
         <height>32</height>
@@ -79,20 +79,20 @@
      <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
-        <x>240</x>
+        <x>310</x>
         <y>80</y>
         <width>101</width>
         <height>18</height>
        </rect>
       </property>
       <property name="text">
-       <string>Water label</string>
+       <string>Water :</string>
       </property>
      </widget>
      <widget class="QgsMapLayerComboBox" name="lcbArea">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>120</x>
         <y>20</y>
         <width>181</width>
         <height>32</height>
@@ -109,13 +109,13 @@
        </rect>
       </property>
       <property name="text">
-       <string>Areas</string>
+       <string>Areas :</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="leLand">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>190</x>
         <y>70</y>
         <width>113</width>
         <height>32</height>
@@ -145,7 +145,20 @@
        </rect>
       </property>
       <property name="text">
-       <string>Land label</string>
+       <string>Labels :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>80</y>
+        <width>101</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Land :</string>
       </property>
      </widget>
     </widget>
@@ -174,7 +187,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Measurements:</string>
+       <string>Measurements :</string>
       </property>
      </widget>
      <widget class="QgsMapLayerComboBox" name="lcbMeasure">
@@ -191,7 +204,7 @@
       <property name="geometry">
        <rect>
         <x>310</x>
-        <y>0</y>
+        <y>10</y>
         <width>160</width>
         <height>32</height>
        </rect>
@@ -211,7 +224,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>50</y>
+        <y>60</y>
         <width>111</width>
         <height>18</height>
        </rect>
@@ -220,6 +233,19 @@
        <string>Altiude :</string>
       </property>
      </widget>
+    </widget>
+    <widget class="QPushButton" name="pbRun">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>280</y>
+       <width>88</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Run</string>
+     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
