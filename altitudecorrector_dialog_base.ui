@@ -237,7 +237,7 @@
     <widget class="QPushButton" name="pbRun">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>140</x>
        <y>280</y>
        <width>88</width>
        <height>34</height>
@@ -245,6 +245,19 @@
      </property>
      <property name="text">
       <string>Run</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pbOverlay">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>280</y>
+       <width>88</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Overlay</string>
      </property>
     </widget>
    </widget>

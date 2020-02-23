@@ -32,6 +32,8 @@ from .altitudecorrector_dialog import AltitudecorrectorDialog
 import os.path
 
 import numpy
+import processing
+
 
 from qgis.PyQt.QtWidgets import QGraphicsScene, QGraphicsView
 # QApplication, ,QCheckBox, QFileDialog
@@ -179,6 +181,7 @@ class Altitudecorrector:
             fit=numpy.polyfit(x, y, 1, w=numpy.sqrt(y))
         return(fit)
     
+    
     def runcalculation(self):
         caliblayer=QgsProject.instance().mapLayersByName('Intersection')[0]
         self.waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())
@@ -216,6 +219,7 @@ class Altitudecorrector:
         self.dlg.fcbAltitude.setLayer(self.dlg.lcbArea.currentLayer())
         self.dlg.lcbMeasure.layerChanged.connect(self.updatemeasfields)   
         self.dlg.pbRun.clicked.connect(self.runcalculation)
+        self.dlg.pbOverlay.clicked.connect(self.overlay)
         # will be set False in run()
         self.first_start = True
         self.updatemeasfields()
@@ -246,7 +250,15 @@ class Altitudecorrector:
         return([self.altitude,self.measure])
     
     
-    
+    def overlay(self):
+        measure=self.dlg.fcbMeasure.layer()
+        area=self.dlg.fcbArea.layer()
+        params={'INPUT':measure,
+                'OVERLAY':area,
+                'OUTPUT':"memory:land_water",
+                'INTERSECTION':"memory:land_water"}
+        processing.runAndLoadResults("qgis:intersection", params)
+        #processing.runandload("qgis:intersection", measure, area, "memory:land_water")
     
     
     def altplot(self,dataset,graphicsview):
