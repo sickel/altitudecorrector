@@ -34,6 +34,7 @@ import os.path
 import numpy
 import processing
 
+from qgis.core import QgsProject, Qgis
 
 from qgis.PyQt.QtWidgets import QGraphicsScene, QGraphicsView
 # QApplication, ,QCheckBox, QFileDialog
@@ -178,26 +179,38 @@ class Altitudecorrector:
         if log:
             fit=numpy.polyfit(x, numpy.log(y), 1, w=numpy.sqrt(y))
         else:
-            fit=numpy.polyfit(x, y, 1, w=numpy.sqrt(y))
+            fit=numpy.polyfit(x, y, 1)
         return(fit)
     
     
     def runcalculation(self):
-        caliblayer=QgsProject.instance().mapLayersByName('Intersection')[0]
+        #caliblayer=QgsProject.instance().mapLayersByName('Intersection')[0]
+        try:
+            caliblayer=self.overlaylayer
+        except:
+            self.iface.messageBar().pushMessage(
+                   "Atitude correction", "Overlay layer does not exist - run overlay",
+                    level=Qgis.Critical, duration=3)
+            return
+        
         self.waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())
         self.landdata=self.extractdata(caliblayer,self.dlg.leLand.text())
         waterfit=self.fit(self.waterdata)
         print(waterfit)
+        print(waterfit[1])
         # ntb=4.284670
         # ntbfactor=0.001743
         # ntb0=ntb+ntbfactor
         # expfactor=-0.006383
         # gmmdown=(value1-ntb)*math.exp(expfactor)/math.exp(expfactor*value2)+ ntb0
         self.altplot(self.landdata,self.dlg.gwLand)
+        print(self.fit(self.landdata,True))
         self.landdata[0]=self.landdata[0]-waterfit[1]
         print(self.fit(self.landdata,True))
         self.altplot(self.waterdata,self.dlg.gwWater)
         self.altplot(self.landdata,self.dlg.gwLand)
+        caliblayer.setName('Used for altitude calibration')
+        
         
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -257,9 +270,12 @@ class Altitudecorrector:
                 'OVERLAY':area,
                 'OUTPUT':"memory:land_water",
                 'INTERSECTION':"memory:land_water"}
-        processing.runAndLoadResults("qgis:intersection", params)
-        #processing.runandload("qgis:intersection", measure, area, "memory:land_water")
-    
+        output=processing.runAndLoadResults("qgis:intersection", params)
+        self.iface.messageBar().pushMessage(
+                   "Atitude correction", "Overlay finished",
+                    level=Qgis.Success, duration=3)
+        self.overlaylayer=QgsProject.instance().mapLayer(output['OUTPUT'])
+        
     
     def altplot(self,dataset,graphicsview):
         w=graphicsview.width()
