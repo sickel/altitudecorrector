@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QFileDialog
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -178,6 +178,8 @@ class Altitudecorrector:
         y=numpy.array(data[1])
         if log:
             fit=numpy.polyfit(x, numpy.log(y), 1, w=numpy.sqrt(y))
+            print(fit)
+            fit=numpy.polyfit(x, numpy.log(y), 1, )
         else:
             fit=numpy.polyfit(x, y, 1)
         return(fit)
@@ -210,6 +212,40 @@ class Altitudecorrector:
         self.altplot(self.waterdata,self.dlg.gwWater)
         self.altplot(self.landdata,self.dlg.gwLand)
         caliblayer.setName('Used for altitude calibration')
+    
+    def savedata(self):
+        try:
+            layer=self.overlaylayer
+        except:
+            self.iface.messageBar().pushMessage(
+                   "Atitude correction", "Overlay layer does not exist - run overlay",
+                    level=Qgis.Critical, duration=3)
+            return
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self.dlg,"Save tab separated data file","","data files (*.dat);;All Files (*)", options=options)
+        if not fileName:
+            return
+        features=layer.getFeatures()
+        valueidx = layer.fields().indexFromName(self.dlg.fcbMeasure.currentField())
+        altidx=layer.fields().indexFromName(self.dlg.fcbAltitude.currentField())
+        typeidx=layer.fields().indexFromName(self.dlg.fcbArea.currentField())
+        ididx=layer.fields().indexFromName("id")
+        idfield=ididx >=0
+        id=0
+        sep='\t'
+        with open(fileName,"w") as outfile:
+            outfile.write(sep.join(["id","altitude","measure","type\n"]))
+            for feat in features:
+                attrs=feat.attributes()
+                if idfield:
+                    id=attrs[ididx]
+                else:
+                    id=+1
+                linedata=[id,attrs[altidx],attrs[valueidx],attrs[typeidx]]
+                linedata=[str(t) for t in linedata]
+                outfile.write(sep.join(linedata))
+                outfile.write("\n")
         
         
     def initGui(self):
@@ -233,6 +269,8 @@ class Altitudecorrector:
         self.dlg.lcbMeasure.layerChanged.connect(self.updatemeasfields)   
         self.dlg.pbRun.clicked.connect(self.runcalculation)
         self.dlg.pbOverlay.clicked.connect(self.overlay)
+        self.dlg.pbSave.clicked.connect(self.savedata)
+        
         # will be set False in run()
         self.first_start = True
         self.updatemeasfields()

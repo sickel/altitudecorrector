@@ -260,6 +260,19 @@
       <string>Overlay</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pbSave">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>280</y>
+       <width>88</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Save data</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
