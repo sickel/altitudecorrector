@@ -274,7 +274,7 @@ class Altitudecorrector:
         # will be set False in run()
         self.first_start = True
         self.updatemeasfields()
-       
+        from .qgis_function import your_expression
     
 
     def unload(self):
@@ -284,6 +284,7 @@ class Altitudecorrector:
                 self.tr(u'&Altitudecorrector'),
                 action)
             self.iface.removeToolBarIcon(action)
+        QgsExpression.unregisterFunction("your_expression")
     
 
     def extractdata(self,layer,key):
