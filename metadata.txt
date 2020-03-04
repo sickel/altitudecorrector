@@ -10,7 +10,9 @@ version=0.1
 author=Morten Sickel
 email=morten@sickel.net
 
-about=Calculates parameters to do an altitude correction using a land / water altitude spiral. It needs the raw data from the flight and a polygon layer defining water and land lines.
+about=Prepares data to calculate parameters to do an altitude correction using a land / water altitude spiral. It needs the raw data from the flight and a polygon layer defining water and land lines.
+
+Presently, it will prepare the data and save a csv-file that can be imported in R to calculate the coefficients.
 
 tracker=https://github.com/sickel/altitudecorrector
 repository=https://github.com/sickel/altitudecorrector
@@ -23,7 +25,7 @@ hasProcessingProvider=no
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=gamma spectrometry,airborne
+tags=gamma,spectrometry,airborne
 
 homepage=https://github.com/sickel/altitudecorrector
 category=Vector
