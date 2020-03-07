@@ -42,7 +42,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -312,7 +312,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>20</y>
+       <y>10</y>
        <width>501</width>
        <height>281</height>
       </rect>
@@ -320,11 +320,24 @@
      <property name="readOnly">
       <bool>true</bool>
      </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;filename=&amp;lt;&amp;gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;altdata=read.csv(filename,sep='\t',header=TRUE)&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;water=altdata[altdata$type==&amp;quot;Water&amp;quot;,]&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;land=altdata[altdata$type==&amp;quot;Land&amp;quot;,]&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;nlsdata=nls(measure ~ ntb+(measure0-ntb)*exp(alpha*altitude),data=land,start=list(alpha=-0.01,ntb=4,measure0=30))&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;nlsdata&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="acceptRichText">
       <bool>false</bool>
      </property>
      <property name="placeholderText">
-      <string>altdata=read.csv(filename,sep='\t',header=TRUE) water=altdata[altdata$type==&quot;Water&quot;,] land=altdata[altdata$type==&quot;Land&quot;,] nlsdata=nls(measure ~ ntb+(measure0-ntb)*exp(alpha*altitude),data=land,start=list(alpha=-0.01,ntb=4,measure0=30)) </string>
+      <string>filename=&lt;&gt; altdata=read.csv(filename,sep='\t',header=TRUE) water=altdata[altdata$type==&quot;Water&quot;,] land=altdata[altdata$type==&quot;Land&quot;,] nlsdata=nls(measure ~ ntb+(measure0-ntb)*exp(alpha*altitude),data=land,start=list(alpha=-0.01,ntb=4,measure0=30)) nlsdata </string>
      </property>
     </widget>
    </widget>

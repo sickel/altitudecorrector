@@ -228,6 +228,11 @@ class Altitudecorrector:
         fileName, _ = QFileDialog.getSaveFileName(self.dlg,"Save tab separated data file","","data files (*.dat);;All Files (*)", options=options)
         if not fileName:
             return
+        script=self.dlg.teRscript.toPlainText()
+        scriptlines=script.split("\n")
+        scriptlines[0]='filename="{}"'.format(fileName)
+        self.dlg.teRscript.setText('\n'.join(scriptlines))
+        
         features=layer.getFeatures()
         valueidx = layer.fields().indexFromName(self.dlg.fcbMeasure.currentField())
         altidx=layer.fields().indexFromName(self.dlg.fcbAltitude.currentField())
@@ -286,7 +291,7 @@ class Altitudecorrector:
                 self.tr(u'&Altitudecorrector'),
                 action)
             self.iface.removeToolBarIcon(action)
-        QgsExpression.unregisterFunction("altitudecorrection")
+        # QgsExpression.unregisterFunction("altitudecorrection")
         
     
 
