@@ -106,3 +106,4 @@ venv.bak/
 .R*
 *.csv
 *autosave
+*swp

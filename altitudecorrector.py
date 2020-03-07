@@ -41,6 +41,8 @@ from qgis.PyQt.QtWidgets import QGraphicsScene, QGraphicsView
 
 from qgis.core import QgsVectorLayer, QgsFeature, QgsField, QgsGeometry, QgsPointXY, QgsField, QgsProject, QgsMapLayerProxyModel, QgsCoordinateTransform, QgsCoordinateReferenceSystem, QgsFieldProxyModel
 
+from qgis.core import QgsExpression
+
 import processing
 
 class Altitudecorrector:
@@ -274,7 +276,7 @@ class Altitudecorrector:
         # will be set False in run()
         self.first_start = True
         self.updatemeasfields()
-        from .qgis_function import your_expression
+        from .qgis_function import altitudecorrection
     
 
     def unload(self):
@@ -284,7 +286,8 @@ class Altitudecorrector:
                 self.tr(u'&Altitudecorrector'),
                 action)
             self.iface.removeToolBarIcon(action)
-        QgsExpression.unregisterFunction("your_expression")
+        QgsExpression.unregisterFunction("altitudecorrection")
+        
     
 
     def extractdata(self,layer,key):
