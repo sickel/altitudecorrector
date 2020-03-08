@@ -10,9 +10,8 @@ version=0.1
 author=Morten Sickel
 email=morten@sickel.net
 
-about=Prepares data to calculate parameters to do an altitude correction using a land / water altitude spiral. It needs the raw data from the flight and a polygon layer defining water and land lines.
-
-Presently, it will prepare the data and save a csv-file that can be imported in R to calculate the coefficients.
+about=Prepares data to calculate parameters to do an altitude correction using a land / water altitude spiral. It needs the raw data from the flight and a polygon layer defining water and land lines. 
+   Presently, it will prepare the data and save a csv-file that can be imported in R to calculate the coefficients.
 
 tracker=https://github.com/sickel/altitudecorrector
 repository=https://github.com/sickel/altitudecorrector

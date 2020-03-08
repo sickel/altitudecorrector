@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
-from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtGui import QIcon, QCursor
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 
 # Initialize Qt resources from file resources.py
@@ -33,8 +33,9 @@ import os.path
 
 import numpy
 import processing
+from PyQt5.QtCore import Qt
 
-from qgis.core import QgsProject, Qgis
+from qgis.core import QgsProject, Qgis, QgsApplication
 
 from qgis.PyQt.QtWidgets import QGraphicsScene, QGraphicsView
 # QApplication, ,QCheckBox, QFileDialog
@@ -288,10 +289,10 @@ class Altitudecorrector:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginVectorMenu(
-                self.tr(u'&Altitudecorrector'),
+                self.tr(u'Spectral data'),
                 action)
             self.iface.removeToolBarIcon(action)
-        # QgsExpression.unregisterFunction("altitudecorrection")
+        QgsExpression.unregisterFunction("$altitudecorrection")
         
     
 
@@ -317,7 +318,9 @@ class Altitudecorrector:
                 'OVERLAY':area,
                 'OUTPUT':"memory:land_water",
                 'INTERSECTION':"memory:land_water"}
+        QgsApplication.setOverrideCursor(QCursor(Qt.WaitCursor));
         output=processing.runAndLoadResults("qgis:intersection", params)
+        QgsApplication.restoreOverrideCursor() 
         self.iface.messageBar().pushMessage(
                    "Atitude correction", "Overlay finished",
                     level=Qgis.Success, duration=3)
