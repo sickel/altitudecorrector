@@ -367,3 +367,15 @@ class Altitudecorrector:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             pass
+
+    def fit_curve(self):
+      try 
+        import numpy as np
+        import scipy.optimize
+      except ImportError:
+        self.iface.messageBar().pushMessage(
+                   "Atitude correction", "Cannot import numpy and scipy - cannot run fit",
+                    level=Qgis.Warning, duration=3)
+        return()
+      # https://swharden.com/blog/2020-09-24-python-exponential-fit/
+      
