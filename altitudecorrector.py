@@ -42,7 +42,7 @@ from qgis.PyQt.QtWidgets import QGraphicsScene, QGraphicsView
 
 from qgis.core import QgsVectorLayer, QgsFeature, QgsField, QgsGeometry, QgsPointXY, QgsField, QgsProject, QgsMapLayerProxyModel, QgsCoordinateTransform, QgsCoordinateReferenceSystem, QgsFieldProxyModel
 
-from qgis.core import QgsExpression
+from qgis.core import QgsExpression,QgsExpressionContextUtils
 
 import processing
 
@@ -328,6 +328,9 @@ class Altitudecorrector:
                 'OUTPUT':"memory:land_water",
                 'INTERSECTION':"memory:land_water"}
         QgsApplication.setOverrideCursor(QCursor(Qt.WaitCursor));
+        self.iface.messageBar().pushMessage(
+                   "Atitude correction", "Running overlay",
+                    level=Qgis.Info, duration=3)
         output=processing.runAndLoadResults("qgis:intersection", params)
         QgsApplication.restoreOverrideCursor() 
         self.iface.messageBar().pushMessage(
@@ -387,7 +390,7 @@ class Altitudecorrector:
         import scipy.optimize
       except ImportError:
         self.iface.messageBar().pushMessage(
-                   "Atitude correction", "Cannot import numpy and scipy - cannot run fit",
+                   "Atitude correction", "Cannot import numpy and/or scipy - cannot run fit",
                     level=Qgis.Warning, duration=3)
         return()
       self.iface.messageBar().pushMessage(
@@ -399,6 +402,7 @@ class Altitudecorrector:
       # 
       NTBact=self.waterdata[1]
       ntb=sum(NTBact)/len(NTBact)
+      QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_ntb',ntb)
       print(ntb)
       self.dlg.leNTB.setText(str(round(ntb,6)))
       #waterfit=self.fit(self.waterdata)
@@ -411,11 +415,22 @@ class Altitudecorrector:
         # expfactor=-0.006383
         # gmmdown=(value1-ntb)*math.exp(expfactor)/math.exp(expfactor*value2)+ ntb0
       calibdata=[]
-      
+      # Subtracting ntb to get only terrestrial background
       calibdata=[x - ntb for x in self.landdata[1]]
       p0=(50,0.006,ntb)
       params, cv = scipy.optimize.curve_fit(self.monoExp, self.landdata[0], calibdata, p0)
-      print(params)
-      self.dlg.leDose0.setText(str(round(params[0],6)))
+      dose0,alpha,offset=params
+      self.dlg.leDose0.setText(str(round(dose0,6)))
+      QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_dose0',float(dose0)) # params[0])
       self.dlg.leAlpha.setText(str(round(params[1],6)))
-            
+      QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_alpha',float(alpha)) # params[1])
+      
+      
+# enum Qgis::MessageLevel
+# 
+# Level for messages This will be used both for message log and message bar in application.
+# Info 	
+# Warning 	
+# Critical 	
+# Success 	
+# None 
