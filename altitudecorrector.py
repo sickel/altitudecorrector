@@ -202,11 +202,12 @@ class Altitudecorrector:
         self.waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())       
         self.landdata=self.extractdata(caliblayer,self.dlg.leLand.text())
         ntbdata=self.waterdata[1]
-        if len(ntbdata) >0:
-            ntb=sum(ntbdata)/len(ntbdata)
-        else:
-            ntb=0
-            #TODO: Add a warning here
+        if len(ntbdata) == 0:
+            self.iface.messageBar().pushMessage(
+                   "Atitude correction", "No selected data, check Areas field used for matching",
+                    level=Qgis.Critical, duration=3)
+            return
+        ntb=sum(ntbdata)/len(ntbdata)
         print(f'(ntb:{ntb}')
         #waterfit=self.fit(self.waterdata)
         #print(waterfit)
@@ -352,8 +353,8 @@ class Altitudecorrector:
         ploth=h-air*2
         scene=QGraphicsScene()
         graphicsview.setScene(scene)
-        xspan=[min(dataset[0]),max(dataset[0])]
-        yspan=[min(dataset[1]),max(dataset[1])]
+        yspan=[min(dataset[0]),max(dataset[0])]
+        xspan=[min(dataset[1]),max(dataset[1])]
         xfact=(xspan[1]-xspan[0])/plotw
         yfact=(yspan[1]-yspan[0])/ploth
         plotradius=2
@@ -361,13 +362,14 @@ class Altitudecorrector:
         yaxx=float(air-1)
         scene.addLine(yaxx,xaxy,yaxx,air/2) # Y-axis
         scene.addLine(yaxx,xaxy,float(w-air/2),xaxy) # X-axis
-        for alt,meas in zip(dataset[0],dataset[1]):
-            y=(alt-xspan[0])/xfact+air
-            x=ploth-(meas-yspan[0])/yfact
+        for alt,meas in zip(dataset[1],dataset[0]):
+            x=(alt-xspan[0])/xfact+air
+            y=ploth-(meas-yspan[0])/yfact
             scene.addEllipse(x,y,plotradius*2,plotradius*2)
-        graphtext=scene.addText('test')
-        graphtext.setPos(100,100)
-    
+        xlabel = scene.addText("Doserate")
+        xlabel.setPos(w-50,yaxx)
+        
+        
     def run(self):
         """Run method that performs all the real work"""
 
