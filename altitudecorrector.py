@@ -352,8 +352,8 @@ class Altitudecorrector:
         ploth=h-air*2
         scene=QGraphicsScene()
         graphicsview.setScene(scene)
-        xspan=[min(dataset[0]),max(dataset[0])]
-        yspan=[min(dataset[1]),max(dataset[1])]
+        xspan=[min(dataset[1]),max(dataset[1])]
+        yspan=[min(dataset[0]),max(dataset[0])]
         xfact=(xspan[1]-xspan[0])/plotw
         yfact=(yspan[1]-yspan[0])/ploth
         plotradius=2
