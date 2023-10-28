@@ -202,11 +202,12 @@ class Altitudecorrector:
         self.waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())       
         self.landdata=self.extractdata(caliblayer,self.dlg.leLand.text())
         ntbdata=self.waterdata[1]
-        if len(ntbdata) >0:
-            ntb=sum(ntbdata)/len(ntbdata)
-        else:
-            ntb=0
-            #TODO: Add a warning here
+        if len(ntbdata) == 0:
+            self.iface.messageBar().pushMessage(
+                   "Atitude correction", "No selected data, check Areas field used for matching",
+                    level=Qgis.Critical, duration=3)
+            return
+        ntb=sum(ntbdata)/len(ntbdata)
         print(f'(ntb:{ntb}')
         #waterfit=self.fit(self.waterdata)
         #print(waterfit)
@@ -218,7 +219,7 @@ class Altitudecorrector:
         # expfactor=-0.006383
         # gmmdown=(value1-ntb)*math.exp(expfactor)/math.exp(expfactor*value2)+ ntb0
         self.altplot(self.landdata,self.dlg.gwLand)
-        print(self.fit(self.landdata,True))
+        print(f'fit:{self.fit(self.landdata,True)}')
         self.landdata[0]=[x-ntb for x in self.landdata[0]]
         print(self.fit(self.landdata,True))
         self.altplot(self.waterdata,self.dlg.gwWater)
@@ -344,6 +345,7 @@ class Altitudecorrector:
         self.dlg.lcbOverlay.setLayer(self.overlaylayer)
     
     def altplot(self,dataset,graphicsview):
+        print(dataset)
         w=graphicsview.width()
         h=graphicsview.height()
         air=39
@@ -357,17 +359,28 @@ class Altitudecorrector:
         xfact=(xspan[1]-xspan[0])/plotw
         yfact=(yspan[1]-yspan[0])/ploth
         plotradius=2
-        xaxy=float(ploth+plotradius*2)
-        yaxx=float(air-1)
-        scene.addLine(yaxx,xaxy,yaxx,air/2) # Y-axis
+        xaxy=float(ploth+plotradius*2) # x-axix y value
+        yaxx=float(air-1)              # y-axis X value
+        scene.addLine(yaxx,xaxy,yaxx,xaxy-ploth) # Y-axis
         scene.addLine(yaxx,xaxy,float(w-air/2),xaxy) # X-axis
-        for alt,meas in zip(dataset[0],dataset[1]):
-            y=(alt-xspan[0])/xfact+air
-            x=ploth-(meas-yspan[0])/yfact
+        for alt,meas in zip(dataset[1],dataset[0]): #TODO, swap alt and meas
+            x=(alt-xspan[0])/xfact+air # doserate
+            y=ploth-(meas-yspan[0])/yfact # altitude|
             scene.addEllipse(x,y,plotradius*2,plotradius*2)
-        graphtext=scene.addText('test')
-        graphtext.setPos(100,100)
-    
+        scene.addText("Doserate").setPos(w-70,xaxy+5)
+        # scene.addText("Altitude").setPos(0,0)
+        xlabels = xspan
+        for i in xlabels:
+            scene.addText(str(round(i))).setPos((i - xspan[0])/xfact+air,xaxy)
+        ylabels = yspan
+        for i in ylabels:
+            scene.addText(str(round(i))).setPos(0,ploth-(i - yspan[0])/yfact)
+        # QPen pen;
+        # pen.setColor(color);
+        # scene->addEllipse( x, y, size, size, pen, QBrush(Qt::red) );
+        # scene->addEllipse( x, y, size, size, pen, QBrush(QColor("#FFCCDD") );
+        # scene.addText(str(round(yspan[1]))).setPos(float(w-air/2),xaxy)
+        
     def run(self):
         """Run method that performs all the real work"""
 
