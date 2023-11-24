@@ -348,7 +348,7 @@ class Altitudecorrector:
         print(dataset)
         w=graphicsview.width()
         h=graphicsview.height()
-        air=39
+        air=30
         #bt=airborne
         plotw=w-air*2
         ploth=h-air*2
@@ -367,8 +367,8 @@ class Altitudecorrector:
             x=(alt-xspan[0])/xfact+air # doserate
             y=ploth-(meas-yspan[0])/yfact # altitude|
             scene.addEllipse(x,y,plotradius*2,plotradius*2)
-        scene.addText("Doserate").setPos(w-70,xaxy+5)
-        # scene.addText("Altitude").setPos(0,0)
+        scene.addText("Doserate").setPos(w-70,xaxy+10)
+        scene.addText("Alt.").setPos(0,10)
         xlabels = xspan
         for i in xlabels:
             scene.addText(str(round(i))).setPos((i - xspan[0])/xfact+air,xaxy)
