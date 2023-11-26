@@ -177,6 +177,7 @@ class Altitudecorrector:
 
 
     def fit(self,data,log=False):
+        
         x=numpy.array(data[0])
         y=numpy.array(data[1])
         if log:
@@ -189,8 +190,10 @@ class Altitudecorrector:
         return(fit)
     
     
-    def runcalculation(self):
-        #caliblayer=QgsProject.instance().mapLayersByName('Intersection')[0]
+    def plotdata(self):
+        """
+        
+        """
         try:
             caliblayer=self.overlaylayer
         except:
@@ -201,32 +204,21 @@ class Altitudecorrector:
         
         self.waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())       
         self.landdata=self.extractdata(caliblayer,self.dlg.leLand.text())
-        ntbdata=self.waterdata[1]
-        if len(ntbdata) == 0:
-            self.iface.messageBar().pushMessage(
-                   "Atitude correction", "No selected data, check Areas field used for matching",
-                    level=Qgis.Critical, duration=3)
-            return
-        ntb=sum(ntbdata)/len(ntbdata)
-        print(f'(ntb:{ntb}')
-        #waterfit=self.fit(self.waterdata)
-        #print(waterfit)
-        #print(waterfit[1])
+        self.altplot(self.landdata,self.dlg.gwLand)
+        self.altplot(self.waterdata,self.dlg.gwWater)
         # "Canned" parameters
         # ntb=4.284670
         # ntbfactor=0.001743
         # ntb0=ntb+ntbfactor
         # expfactor=-0.006383
         # gmmdown=(value1-ntb)*math.exp(expfactor)/math.exp(expfactor*value2)+ ntb0
-        self.altplot(self.landdata,self.dlg.gwLand)
-        print(f'fit:{self.fit(self.landdata,True)}')
-        self.landdata[0]=[x-ntb for x in self.landdata[0]]
-        print(self.fit(self.landdata,True))
-        self.altplot(self.waterdata,self.dlg.gwWater)
-        self.altplot(self.landdata,self.dlg.gwLand)
-        caliblayer.setName('Used for altitude calibration')
-    
+        #self.landdata[0]=[x-ntb for x in self.landdata[0]]
+        
     def savedata(self):
+        """ Saves the overlay data as a tab separated data file to be able to 
+        use other tools to calculate the parameters. Also updating the R-script in
+        the last tab to use the saved file.
+        """
         try:
             layer=self.overlaylayer
         except:
@@ -287,7 +279,7 @@ class Altitudecorrector:
         self.dlg.fcbAltitude.setLayer(self.dlg.lcbArea.currentLayer())
         self.dlg.lcbMeasure.layerChanged.connect(self.updatemeasfields)   
         self.dlg.lcbOverlay.layerChanged.connect(self.updatedoverlay)   
-        self.dlg.pbRun.clicked.connect(self.runcalculation)
+        self.dlg.pbRun.clicked.connect(self.plotdata)
         self.dlg.pbFit.clicked.connect(self.fit_curve)
         self.dlg.pbOverlay.clicked.connect(self.overlay)
         self.dlg.pbSave.clicked.connect(self.savedata)
@@ -311,6 +303,12 @@ class Altitudecorrector:
         pass
 
     def extractdata(self,layer,key):
+        """ Extracts altitude and dose data from a layer where type is a given key
+        The fields to extract and the type field must have been selected in the UI
+        
+        :params layer: Layer to extract data from
+        :params key: Value for key to select data
+        """
         self.measure=[]
         self.altitude=[]
         features=layer.getFeatures()
@@ -322,10 +320,18 @@ class Altitudecorrector:
             if key == None or attrs[typeidx]==key: 
                 self.altitude.append(attrs[altidx])
                 self.measure.append(attrs[valueidx])
+        if len(self.measure) < 2:
+            self.iface.messageBar().pushMessage(
+                   "Atitude correction", "Too few points found for altitude correction",
+                    level=Qgis.Warnin, duration=3)
+            
         return([self.altitude,self.measure])
     
     
     def overlay(self):
+        """ Runs an overlay of the selected layers, makes plots of
+        land and water data and calculates the parameters
+        """
         measure=self.dlg.fcbMeasure.layer()
         area=self.dlg.fcbArea.layer()
         params={'INPUT':measure,
@@ -343,12 +349,15 @@ class Altitudecorrector:
                     level=Qgis.Success, duration=3)
         self.overlaylayer=QgsProject.instance().mapLayer(output['OUTPUT'])
         self.dlg.lcbOverlay.setLayer(self.overlaylayer)
+        self.plotdata()
+        self.fit_curve()
     
     def altplot(self,dataset,graphicsview):
-        print(dataset)
+        """Plots dose vs altitude for land and water data
+        """
         w=graphicsview.width()
         h=graphicsview.height()
-        air=39
+        air=39 # Spacing around plot
         #bt=airborne
         plotw=w-air*2
         ploth=h-air*2
@@ -368,18 +377,14 @@ class Altitudecorrector:
             y=ploth-(meas-yspan[0])/yfact # altitude|
             scene.addEllipse(x,y,plotradius*2,plotradius*2)
         scene.addText("Doserate").setPos(w-70,xaxy+5)
-        # scene.addText("Altitude").setPos(0,0)
+        # Is there a simple way to turn text 90 degrees?
+        scene.addText("Altitude").setPos(air/2,0)
         xlabels = xspan
         for i in xlabels:
             scene.addText(str(round(i))).setPos((i - xspan[0])/xfact+air,xaxy)
         ylabels = yspan
         for i in ylabels:
             scene.addText(str(round(i))).setPos(0,ploth-(i - yspan[0])/yfact)
-        # QPen pen;
-        # pen.setColor(color);
-        # scene->addEllipse( x, y, size, size, pen, QBrush(Qt::red) );
-        # scene->addEllipse( x, y, size, size, pen, QBrush(QColor("#FFCCDD") );
-        # scene.addText(str(round(yspan[1]))).setPos(float(w-air/2),xaxy)
         
     def run(self):
         """Run method that performs all the real work"""
@@ -427,6 +432,7 @@ class Altitudecorrector:
       #waterfit=self.fit(self.waterdata)
         #print(waterfit)
         #print(waterfit[1])
+        # To check that data makes sense:
         # "Canned" parameters
         # ntb=4.284670
         # ntbfactor=0.001743
