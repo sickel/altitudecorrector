@@ -418,16 +418,17 @@ class Altitudecorrector:
                     level=Qgis.Warning, duration=3)
         return()
       self.iface.messageBar().pushMessage(
-                   "Atitude correction", "Running ...",
+                   "Atitude correction", "Calculating parameters ...",
                     level=Qgis.Success, duration=3)
       
       # https://swharden.com/blog/2020-09-24-python-exponential-fit/
-      # NTB - calc from waterdata
+      # NTB - calc average from waterdata
       # 
       NTBact=self.waterdata[1]
       ntb=sum(NTBact)/len(NTBact)
       QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_ntb',ntb)
       print(ntb)
+      
       self.dlg.leNTB.setText(str(round(ntb,6)))
       #waterfit=self.fit(self.waterdata)
         #print(waterfit)
