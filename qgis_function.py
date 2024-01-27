@@ -3,27 +3,29 @@ from qgis.gui import *
 import math
 
 @qgsfunction(args='auto', group='Gamma')
-def altitudecorrection(value1, value2, ntb,ntbfactor,expfactor, feature, parent):
+def altitudecorrection_2(value, altitude, water0m, waterslope, landattenuation, feature, parent):
     """
-    Does altitude correction on gross measurements.
+    Does altitude correction on gross measurements estimates the value at 1m above ground.
     <h2>Example usage:</h2>
     <ul>
-    <li>altitudecorr("valuefield","altitudefield",ntb,ntbfactor,expfactor) -> Value at 1 meter</li>
+    <li>altitudecorr("value","altitude",water0m, waterslope,landattenuation) -> Estimated value at 1 meter</li>
     </ul>
-    </h3>Possible values:</h3><br />
-    ntb=4.284670<br />
-    ntbfactor=0.001743<br />
-    expfactor=-0.006383
-    
+    </h3>Typical values for dose rate:</h3><br />
+    water0m = 4.284670<br />
+    waterslope = 0.001743<br />
+    landattenuation = -0.006383
+    :param value: The field that is to be corrected
+    :param altitude: The field that holds altitude above surface correction.
+    :param water0m: The estimated value at water surface
+    :param waterslope: The estimated slope over water
+    :param landattenuation: The estimated attenuation factor over land
+    :return: etimated value for 1 meter above ground
+
     """
     
-    
-    # For gross count:
-    #ntb=997.176 + 0.423522*value2
-    #ntb0=997.176 + 0.423522
-    #ntb=4.284670
-    #ntbfactor=0.001743
-    ntb0=ntb+ntbfactor
-    #expfactor=-0.006383
-    gmmdown=(value1-ntb)*math.exp(expfactor)/math.exp(expfactor*value2)+ ntb0
-    return gmmdown
+    ntb = water0m + waterslope * altitude
+    ntb1 = water0m + waterslope 
+    if landattenuation > 0:
+        landattenuation = -1 * landattenuation
+    gmmdown= (value-ntb) * math.exp(landattenuation)/math.exp(landattenuation*altitude) + ntb1
+    return gmmdownv

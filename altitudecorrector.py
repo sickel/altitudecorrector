@@ -418,11 +418,11 @@ class Altitudecorrector:
                     level=Qgis.Warning, duration=3)
         return()
       self.iface.messageBar().pushMessage(
-                   "Atitude correction", "Running ...",
+                   "Atitude correction", "Calculating parameters ...",
                     level=Qgis.Success, duration=3)
       
       # https://swharden.com/blog/2020-09-24-python-exponential-fit/
-      # NTB - calc from waterdata
+      # NTB - calc average from waterdata
       # 
       waterfit=self.fit(self.waterdata)
       self.dlg.leWaterSlope.setText(str(round(waterfit[0],6)))
@@ -430,13 +430,13 @@ class Altitudecorrector:
       QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_ntb',ntb)
       self.dlg.leNTB.setText(str(ntb))
       #print(waterfit[1])
-        # To check that data makes sense:
-        # "Canned" parameters
-        # ntb=4.284670
-        # ntbfactor=0.001743
-        # ntb0=ntb+ntbfactor
-        # expfactor=-0.006383
-        # gmmdown=(value1-ntb)*math.exp(expfactor)/math.exp(expfactor*value2)+ ntb0
+      # To check that data makes sense:
+      # "Canned" parameters
+      # ntb=4.284670
+      # ntbfactor=0.001743
+      # ntb0=ntb+ntbfactor
+      # expfactor=-0.006383
+      # gmmdown=(value1-ntb)*math.exp(expfactor)/math.exp(expfactor*value2)+ ntb0
       calibdata=[]
       # Subtracting ntb to get only terrestrial background
       calibdata=[x - ntb for x in self.landdata[1]]
