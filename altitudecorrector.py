@@ -424,10 +424,10 @@ class Altitudecorrector:
       # https://swharden.com/blog/2020-09-24-python-exponential-fit/
       # NTB - calc from waterdata
       # 
-      QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_ntb',ntb)
       waterfit=self.fit(self.waterdata)
       self.dlg.leWaterSlope.setText(str(round(waterfit[0],6)))
       ntb = round(waterfit[1],6)
+      QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_ntb',ntb)
       self.dlg.leNTB.setText(str(ntb))
       #print(waterfit[1])
         # To check that data makes sense:
