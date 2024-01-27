@@ -6,12 +6,22 @@
 name=Altitudecorrector
 qgisMinimumVersion=3.0
 description=Calculates altitude correction for airborne gamma spectroemtry data
-version=0.21
+version=0.95
 author=Morten Sickel
 email=morten@sickel.net
 
 about=Prepares data to calculate parameters to do an altitude correction using a land / water altitude spiral. It needs the raw data from the flight and a polygon layer defining water and land lines. 
    Presently, it will prepare the data and save a csv-file that can be imported in R to calculate the coefficients.
+   
+   Select the data layer and the field that contains the measurements. Then select the field that holds the altitude data. Select the layer defining the water and land part of the altitude spiral, then the field designating water and land and which labels used for land and water. Press "Overlay" and the data will be processed
+   
+   The water plot and land plot tabs will show those two data sets to see that the data are correct. The fit data will be found under "Fit data". If numpy does not exist, a fit can be done in R. Save the data, copy out and run the script under the "R-script" tab.
+   
+   The plugin will install the formula altitudecorr("valuefield","altitudefield",ntb,ntbfactor,expfactor) -> Value at 1 meter under the group Gamma. This formula does still not use the water slope in the calculation.
+   
+   Planned updates for 1.0:
+   * Formula that is using water slope
+   * example formula shown
 
 tracker=https://github.com/sickel/altitudecorrector
 repository=https://github.com/sickel/altitudecorrector
@@ -30,7 +40,7 @@ homepage=https://github.com/sickel/altitudecorrector
 category=Vector
 icon=icon.png
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
