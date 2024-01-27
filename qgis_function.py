@@ -3,7 +3,7 @@ from qgis.gui import *
 import math
 
 @qgsfunction(args='auto', group='Gamma')
-def altitudecorrection_2(value, altitude, water0m, waterslope, landattenuation, feature, parent):
+def altitudecorrection(value, altitude, water0m, waterslope, landattenuation, feature, parent):
     """
     Does altitude correction on gross measurements estimates the value at 1m above ground.
     <h2>Example usage:</h2>
@@ -13,7 +13,7 @@ def altitudecorrection_2(value, altitude, water0m, waterslope, landattenuation, 
     </h3>Typical values for dose rate:</h3><br />
     water0m = 4.284670<br />
     waterslope = 0.001743<br />
-    landattenuation = -0.006383
+    landattenuation = 0.006383
     :param value: The field that is to be corrected
     :param altitude: The field that holds altitude above surface correction.
     :param water0m: The estimated value at water surface

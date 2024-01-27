@@ -409,43 +409,37 @@ class Altitudecorrector:
       return m * np.exp(-t * x) + b
    
     def fit_curve(self):
-      try:
-        import numpy as np
-        import scipy.optimize
-      except ImportError:
-        self.iface.messageBar().pushMessage(
+        try:
+          import numpy as np
+          import scipy.optimize
+        except ImportError:
+          self.iface.messageBar().pushMessage(
                    "Atitude correction", "Cannot import numpy and/or scipy - cannot run fit",
                     level=Qgis.Warning, duration=3)
-        return()
-      self.iface.messageBar().pushMessage(
-                   "Atitude correction", "Calculating parameters ...",
-                    level=Qgis.Success, duration=3)
-      
-      # https://swharden.com/blog/2020-09-24-python-exponential-fit/
-      # NTB - calc average from waterdata
-      # 
-      waterfit=self.fit(self.waterdata)
-      self.dlg.leWaterSlope.setText(str(round(waterfit[0],6)))
-      ntb = round(waterfit[1],6)
-      QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_ntb',ntb)
-      self.dlg.leNTB.setText(str(ntb))
-      #print(waterfit[1])
-      # To check that data makes sense:
-      # "Canned" parameters
-      # ntb=4.284670
-      # ntbfactor=0.001743
-      # ntb0=ntb+ntbfactor
-      # expfactor=-0.006383
-      # gmmdown=(value1-ntb)*math.exp(expfactor)/math.exp(expfactor*value2)+ ntb0
-      calibdata=[]
-      # Subtracting ntb to get only terrestrial background
-      calibdata=[x - ntb for x in self.landdata[1]]
-      p0=(50,0.006,ntb)
-      params, cv = scipy.optimize.curve_fit(self.monoExp, self.landdata[0], calibdata, p0)
-      dose0,alpha,offset=params
-      self.dlg.leAlpha.setText(str(round(params[1],6)))
-      QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_alpha',float(alpha)) # params[1])
-      
+          return()
+        self.iface.messageBar().pushMessage(
+                "Atitude correction", "Calculating parameters ...",
+                level=Qgis.Success, duration=3)
+    
+        # https://swharden.com/blog/2020-09-24-python-exponential-fit/
+        # NTB - calc average from waterdata
+        # 
+        waterfit=self.fit(self.waterdata)
+        self.dlg.leWaterSlope.setText(str(round(waterfit[0],6)))
+        ntb = round(waterfit[1],6)
+        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_ntb',ntb)
+        self.dlg.leNTB.setText(str(ntb))
+        calibdata=[]
+        calibdata=[x - ntb for x in self.landdata[1]]
+        p0=(50,0.006,ntb)
+        params, cv = scipy.optimize.curve_fit(self.monoExp, self.landdata[0], calibdata, p0)
+        dose0,alpha,offset=params
+        self.dlg.leAlpha.setText(str(round(params[1],6)))
+        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_alpha',float(alpha)) # params[1])
+        # def altitudecorrection(value, altitude, water0m, waterslope, landattenuation, feature, parent):
+        formulastring = f'altitudecorrection("dose1", "altitude", {ntb}, {round(waterfit[0],6)}, {round(alpha,6)})'
+        self.dlg.leFormula.setText(formulastring)
+                                           
       
 # enum Qgis::MessageLevel
 # 
