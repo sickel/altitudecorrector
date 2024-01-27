@@ -443,8 +443,6 @@ class Altitudecorrector:
       p0=(50,0.006,ntb)
       params, cv = scipy.optimize.curve_fit(self.monoExp, self.landdata[0], calibdata, p0)
       dose0,alpha,offset=params
-      self.dlg.leDose0.setText(str(round(dose0,6)))
-      QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_dose0',float(dose0)) # params[0])
       self.dlg.leAlpha.setText(str(round(params[1],6)))
       QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_alpha',float(alpha)) # params[1])
       
