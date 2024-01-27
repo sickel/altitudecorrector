@@ -177,7 +177,6 @@ class Altitudecorrector:
 
 
     def fit(self,data,log=False):
-        
         x=numpy.array(data[0])
         y=numpy.array(data[1])
         if log:
@@ -279,9 +278,8 @@ class Altitudecorrector:
         self.dlg.fcbAltitude.setLayer(self.dlg.lcbArea.currentLayer())
         self.dlg.lcbMeasure.layerChanged.connect(self.updatemeasfields)   
         self.dlg.lcbOverlay.layerChanged.connect(self.updatedoverlay)   
-        self.dlg.pbRun.clicked.connect(self.plotdata)
-        self.dlg.pbFit.clicked.connect(self.fit_curve)
-        self.dlg.pbOverlay.clicked.connect(self.overlay)
+        #self.dlg.pbRun.clicked.connect(self.plotdata)
+        self.dlg.pbRun.clicked.connect(self.overlay)
         self.dlg.pbSave.clicked.connect(self.savedata)
         
         # will be set False in run()
@@ -323,7 +321,7 @@ class Altitudecorrector:
         if len(self.measure) < 2:
             self.iface.messageBar().pushMessage(
                    "Atitude correction", "Too few points found for altitude correction",
-                    level=Qgis.Warnin, duration=3)
+                    level=Qgis.Warning, duration=3)
             
         return([self.altitude,self.measure])
     
@@ -425,10 +423,13 @@ class Altitudecorrector:
         # NTB - calc average from waterdata
         # 
         waterfit=self.fit(self.waterdata)
-        self.dlg.leWaterSlope.setText(str(round(waterfit[0],6)))
-        ntb = round(waterfit[1],6)
-        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_ntb',ntb)
-        self.dlg.leNTB.setText(str(ntb))
+        waterslope = round(waterfit[0],6)
+        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_waterslope',waterslope)
+        self.dlg.leWaterSlope.setText(str(waterslope))
+        water0 = round(waterfit[1],6)
+        ntb = water0+waterslope # ntb @ 1 meter
+        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_water0',water0)
+        self.dlg.leNTB.setText(str(water0))
         calibdata=[]
         calibdata=[x - ntb for x in self.landdata[1]]
         p0=(50,0.006,ntb)
@@ -437,7 +438,10 @@ class Altitudecorrector:
         self.dlg.leAlpha.setText(str(round(params[1],6)))
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_alpha',float(alpha)) # params[1])
         # def altitudecorrection(value, altitude, water0m, waterslope, landattenuation, feature, parent):
-        formulastring = f'altitudecorrection("dose1", "altitude", {ntb}, {round(waterfit[0],6)}, {round(alpha,6)})'
+        valuefield = self.dlg.fcbMeasure.currentField()
+        altitudefield = self.dlg.fcbAltitude.currentField()
+        
+        formulastring = f'altitudecorrection("{valuefield}", "{altitudefield}", {water0}, {round(waterfit[0],6)}, {round(alpha,6)})'
         self.dlg.leFormula.setText(formulastring)
                                            
       
