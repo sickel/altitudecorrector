@@ -28,4 +28,4 @@ def altitudecorrection(value, altitude, water0m, waterslope, landattenuation, fe
     if landattenuation > 0:
         landattenuation = -1 * landattenuation
     gmmdown= (value-ntb) * math.exp(landattenuation)/math.exp(landattenuation*altitude) + ntb1
-    return gmmdownv
+    return gmmdown
