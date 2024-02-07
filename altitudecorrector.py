@@ -337,18 +337,15 @@ class Altitudecorrector:
                 'OUTPUT':"memory:land_water",
                 'INTERSECTION':"memory:land_water"}
         QgsApplication.setOverrideCursor(QCursor(Qt.WaitCursor));
-        self.iface.messageBar().pushMessage(
-                   "Atitude correction", "Running overlay",
-                    level=Qgis.Info, duration=3)
         output=processing.runAndLoadResults("qgis:intersection", params)
         QgsApplication.restoreOverrideCursor() 
-        self.iface.messageBar().pushMessage(
-                   "Atitude correction", "Overlay finished",
-                    level=Qgis.Success, duration=3)
         self.overlaylayer=QgsProject.instance().mapLayer(output['OUTPUT'])
         self.dlg.lcbOverlay.setLayer(self.overlaylayer)
         self.plotdata()
         self.fit_curve()
+    
+    
+    
     
     def altplot(self,dataset,graphicsview):
         """Plots dose vs altitude for land and water data
@@ -374,9 +371,9 @@ class Altitudecorrector:
             x=(alt-xspan[0])/xfact+air # doserate
             y=ploth-(meas-yspan[0])/yfact # altitude|
             scene.addEllipse(x,y,plotradius*2,plotradius*2)
-        scene.addText("Doserate").setPos(w-70,xaxy+5)
+        scene.addText("Measured").setPos(w-70,xaxy+5)
         # Is there a simple way to turn text 90 degrees?
-        scene.addText("Altitude").setPos(air/2,0)
+        scene.addText("Alt.").setPos(air/2,0)
         xlabels = xspan
         for i in xlabels:
             scene.addText(str(round(i))).setPos((i - xspan[0])/xfact+air,xaxy)
@@ -415,9 +412,6 @@ class Altitudecorrector:
                    "Atitude correction", "Cannot import numpy and/or scipy - cannot run fit",
                     level=Qgis.Warning, duration=3)
           return()
-        self.iface.messageBar().pushMessage(
-                "Atitude correction", "Calculating parameters ...",
-                level=Qgis.Success, duration=3)
     
         # https://swharden.com/blog/2020-09-24-python-exponential-fit/
         # NTB - calc average from waterdata
@@ -433,7 +427,13 @@ class Altitudecorrector:
         calibdata=[]
         calibdata=[x - ntb for x in self.landdata[1]]
         p0=(50,0.006,ntb)
-        params, cv = scipy.optimize.curve_fit(self.monoExp, self.landdata[0], calibdata, p0)
+        try:
+            params, cv = scipy.optimize.curve_fit(self.monoExp, self.landdata[0], calibdata, p0)
+        except RuntimeError:
+                self.iface.messageBar().pushMessage(
+                   "Atitude correction", "Cannot find optimum solution",
+                    level=Qgis.Warning, duration=3)
+                    return
         dose0,alpha,offset=params
         self.dlg.leAlpha.setText(str(round(params[1],6)))
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_alpha',float(alpha)) # params[1])
