@@ -271,13 +271,11 @@ class Altitudecorrector:
         self.dlg.fcbArea.setLayer(self.dlg.lcbArea.currentLayer())
         self.dlg.lcbArea.layerChanged.connect(lambda: self.dlg.fcbArea.setLayer(self.dlg.lcbArea.currentLayer()))   
         self.dlg.lcbMeasure.setFilters(QgsMapLayerProxyModel.PointLayer)
-        self.dlg.lcbOverlay.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.dlg.fcbMeasure.setLayer(self.dlg.lcbArea.currentLayer())
         self.dlg.fcbMeasure.setFilters(QgsFieldProxyModel.Numeric)
         self.dlg.fcbAltitude.setFilters(QgsFieldProxyModel.Numeric)
         self.dlg.fcbAltitude.setLayer(self.dlg.lcbArea.currentLayer())
         self.dlg.lcbMeasure.layerChanged.connect(self.updatemeasfields)   
-        self.dlg.lcbOverlay.layerChanged.connect(self.updatedoverlay)   
         #self.dlg.pbRun.clicked.connect(self.plotdata)
         self.dlg.pbRun.clicked.connect(self.overlay)
         self.dlg.pbSave.clicked.connect(self.savedata)
@@ -340,7 +338,6 @@ class Altitudecorrector:
         output=processing.runAndLoadResults("qgis:intersection", params)
         QgsApplication.restoreOverrideCursor() 
         self.overlaylayer=QgsProject.instance().mapLayer(output['OUTPUT'])
-        self.dlg.lcbOverlay.setLayer(self.overlaylayer)
         self.plotdata()
         self.fit_curve()
     
@@ -428,12 +425,12 @@ class Altitudecorrector:
         calibdata=[x - ntb for x in self.landdata[1]]
         p0=(50,0.006,ntb)
         try:
-            params, cv = scipy.optimize.curve_fit(self.monoExp, self.landdata[0], calibdata, p0)
+            params, cv = scipy.optimize.curve_fit(self.monoExp, self.landdata[0], calibdata, p0, maxfev=5000)
         except RuntimeError:
                 self.iface.messageBar().pushMessage(
                    "Atitude correction", "Cannot find optimum solution",
                     level=Qgis.Warning, duration=3)
-                    return
+                return
         dose0,alpha,offset=params
         self.dlg.leAlpha.setText(str(round(params[1],6)))
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_alpha',float(alpha)) # params[1])
