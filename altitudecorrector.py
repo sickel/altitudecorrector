@@ -372,7 +372,8 @@ class Altitudecorrector:
             x=(alt-xspan[0])/xfact+air # doserate
             y=ploth-(meas-yspan[0])/yfact # altitude|
             scene.addEllipse(x,y,plotradius*2,plotradius*2)
-        scene.addText("Measured").setPos(w-70,xaxy+5)
+        valuefield = self.dlg.fcbMeasure.currentField()
+        scene.addText(valuefield).setPos(w-70,xaxy+15)
         # Is there a simple way to turn text 90 degrees?
         scene.addText("Alt.").setPos(air/2,0)
         xlabels = xspan
