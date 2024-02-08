@@ -44,6 +44,8 @@ from qgis.core import QgsVectorLayer, QgsFeature, QgsField, QgsGeometry, QgsPoin
 
 from qgis.core import QgsExpression,QgsExpressionContextUtils
 
+from time import localtime,strftime
+
 import processing
 
 class Altitudecorrector:
@@ -328,6 +330,7 @@ class Altitudecorrector:
         """ Runs an overlay of the selected layers, makes plots of
         land and water data and calculates the parameters
         """
+        timestamp = strftime("%H:%M:%S", localtime())
         measure=self.dlg.fcbMeasure.layer()
         area=self.dlg.fcbArea.layer()
         params={'INPUT':measure,
@@ -338,6 +341,7 @@ class Altitudecorrector:
         output=processing.runAndLoadResults("qgis:intersection", params)
         QgsApplication.restoreOverrideCursor() 
         self.overlaylayer=QgsProject.instance().mapLayer(output['OUTPUT'])
+        self.overlaylayer.setName(f'Altitude correction data {timestamp}')
         self.plotdata()
         self.fit_curve()
     
