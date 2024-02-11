@@ -12,11 +12,13 @@ email=morten@sickel.net
 
 about=Prepares data to calculate parameters to do an altitude correction using a land / water altitude spiral. It needs the raw data from the flight and a polygon layer defining water and land lines. 
    
-   Select the data layer and the field that contains the measurements. Then select the field that holds the altitude data. Select the layer defining the water and land part of the altitude spiral, then the field designating water and land and which labels used for land and water. Press "Overlay" and the data will be processed
+   Select the data layer and the field that contains the measurements. Then select the field that holds the altitude data. Select the layer defining the water and land part of the altitude spiral, then the field designating water and land and which labels used for land and water. Press "Run" and the data will be processed
    
-   The water plot and land plot tabs will show those two data sets to see that the data are correct. The fit data will be found under "Fit data". If numpy does not exist, a fit can be done in R. Save the data, copy out and run the script under the "R-script" tab.
+   The water plot and land plot tabs will show those two data sets to see that the data are correct. The fit data will be found under "Fit data". 
    
-   The plugin will install the formula altitudecorr("valuefield","altitudefield",water0,waterslope,attenuation) -> Value at 1 meter under the group Gamma. Using the parameters calculated by this plugin, the formula can be used for height correction of aerial data.
+   If numpy is not installed, data marked with land and water can be saved to be fitted using other software, e.g. R.
+   
+   The plugin will install the formula altitudecorr("valuefield","altitudefield",water0,waterslope,attenuation) -> Value at 1 meter under the group Gamma. Using the parameters calculated by this plugin, the formula can be used for height correction of aerial data. 
    
 tracker=https://github.com/sickel/altitudecorrector
 repository=https://github.com/sickel/altitudecorrector
@@ -46,9 +48,6 @@ deprecated=False
 # (or upgraded) can be specified.
 # Check the documentation for more information.
 # plugin_dependencies=
-
-Category of the plugin: Raster, Vector, Database or Web
-# category=Vector
 
 # If the plugin can run on QGIS Server.
 server=False
