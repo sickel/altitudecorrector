@@ -235,6 +235,9 @@ class Altitudecorrector:
         script=self.dlg.teRscript.toPlainText()
         scriptlines=script.split("\n")
         scriptlines[0]='filename="{}"'.format(fileName)
+        scriptlines[0] = 'Do not use this at the moment'
+        # Todo set water0 and waterslopw
+        # nlsdata=nls(measure ~ (measure0-waterslope-water0)*exp(alpha*altitude)+water0+waterslope*altitude,data=land_doserate,start=list(alpha=-0.006,measure0=1))
         self.dlg.teRscript.setText('\n'.join(scriptlines))
         
         features=layer.getFeatures()
@@ -401,51 +404,61 @@ class Altitudecorrector:
             # substitute with your code.
             pass
 
-    def monoExp(self,x, m, t, b):
-      import numpy as np
-      return m * np.exp(-t * x) + b
+    def monoExp(self,altitude, measured, alpha):
+        # Measurement is alredy corrected for ntb0
+        return measured * numpy.exp(alpha * altitude)
+
    
     def fit_curve(self):
+        """
+        Uses the water- and land data to calculate parameters to use for altitude correction
+        """
         try:
           import numpy as np
           import scipy.optimize
         except ImportError:
           self.iface.messageBar().pushMessage(
                    "Atitude correction", "Cannot import numpy and/or scipy - cannot run fit",
-                    level=Qgis.Warning, duration=3)
+                    level=Qgis.Warning,duration=20)
           return()
     
         # https://swharden.com/blog/2020-09-24-python-exponential-fit/
-        # NTB - calc average from waterdata
         # 
         waterfit=self.fit(self.waterdata)
+        # A linear fit 
         waterslope = round(waterfit[0],6)
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_waterslope',waterslope)
         self.dlg.leWaterSlope.setText(str(waterslope))
         water0 = round(waterfit[1],6)
-        ntb = water0+waterslope # ntb @ 1 meter
+        ntb1 = water0+waterslope # ntb @ 1 meter
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_water0',water0)
         self.dlg.leNTB.setText(str(water0))
         calibdata=[]
-        calibdata=[x - ntb for x in self.landdata[1]]
-        p0=(50,0.006,ntb)
+        for idx,meas in enumerate(self.landdata[1]):
+            # Calculates the value from the terrestrial radiation. 
+            # Subtracts non terrestrial background @ altitude
+            calibdata.append(meas - (water0+waterslope*self.landdata[0][idx]))
+        # Initial parameters for estimation. Measurement @1 meter and attenuation coeffecient
+        p0=(30,-0.006)
         try:
-            params, cv = scipy.optimize.curve_fit(self.monoExp, self.landdata[0], calibdata, p0, maxfev=5000)
+            params = scipy.optimize.curve_fit(self.monoExp,self.landdata[0],calibdata,p0)
         except RuntimeError:
-                self.iface.messageBar().pushMessage(
-                   "Atitude correction", "Cannot find optimum solution",
-                    level=Qgis.Warning, duration=3)
-                return
-        dose0,alpha,offset=params
-        self.dlg.leAlpha.setText(str(round(params[1],6)))
+            self.dlg.leAlpha.setText('---')
+            self.iface.messageBar().pushMessage(
+               "Atitude correction", "Cannot find optimum solution",
+                level=Qgis.Warning, duration=3)
+            return
+        alpha = params[0][1]
+        measure0 = params[0][0]+water0
+        self.dlg.leAlpha.setText(str(round(alpha,6)))
+        self.dlg.leLand1m.setText(str(round(measure0,2)))
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_alpha',float(alpha)) # params[1])
-        # def altitudecorrection(value, altitude, water0m, waterslope, landattenuation, feature, parent):
         valuefield = self.dlg.fcbMeasure.currentField()
         altitudefield = self.dlg.fcbAltitude.currentField()
         
         formulastring = f'altitudecorrection("{valuefield}", "{altitudefield}", {water0}, {round(waterfit[0],6)}, {round(alpha,6)})'
         self.dlg.leFormula.setText(formulastring)
-                                           
+        # R function: nlsdata=nls(measure ~ (measure0-waterslope-water0)*exp(alpha*altitude)+water0+waterslope*altitude,data=land_doserate,start=list(alpha=-0.006,measure0=1))                                    
       
 # enum Qgis::MessageLevel
 # 

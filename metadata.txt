@@ -6,7 +6,7 @@
 name=Altitudecorrector
 qgisMinimumVersion=3.0
 description=Calculates altitude correction for airborne gamma spectroemtry data
-version=1.0 
+version=1.1
 author=Morten Sickel
 email=morten@sickel.net
 
@@ -26,10 +26,12 @@ repository=https://github.com/sickel/altitudecorrector
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog= 1.0 Corrected formula, cleaned up UI, changed variable names
+changelog= 1.1 Some UI clean up, corrected error in parameter estimation
+   
+   1.0 Corrected formula, cleaned up UI, changed variable names
 
 # Tags are comma separated with spaces allowed
-tags=gamma,spectrometry,airborne
+tags=gamma,spectrometry,airborne,radioactivity,contamination
 
 homepage=https://github.com/sickel/altitudecorrector
 category=Vector
@@ -46,7 +48,7 @@ deprecated=False
 # plugin_dependencies=
 
 Category of the plugin: Raster, Vector, Database or Web
-# category=
+# category=Vector
 
 # If the plugin can run on QGIS Server.
 server=False
