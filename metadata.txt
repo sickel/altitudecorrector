@@ -6,7 +6,7 @@
 name=Altitudecorrector
 qgisMinimumVersion=3.0
 description=Calculates altitude correction for airborne gamma spectroemtry data
-version=1.1
+version=1.2
 author=Morten Sickel
 email=morten@sickel.net
 
@@ -16,7 +16,7 @@ about=Prepares data to calculate parameters to do an altitude correction using a
    
    The water plot and land plot tabs will show those two data sets to see that the data are correct. The fit data will be found under "Fit data". 
    
-   If numpy is not installed, data marked with land and water can be saved to be fitted using other software, e.g. R.
+   If numpy is not installed, data marked with land and water can be saved to be fitted using other software, e.g. R. See the R-script tab for an example to do the fitting in R
    
    The plugin will install the formula altitudecorr("valuefield","altitudefield",water0,waterslope,attenuation) -> Value at 1 meter under the group Gamma. Using the parameters calculated by this plugin, the formula can be used for height correction of aerial data. 
    
@@ -28,8 +28,8 @@ repository=https://github.com/sickel/altitudecorrector
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog= 1.1 Some UI clean up, corrected error in parameter estimation
-   
+changelog= 1.2 Corrected R-script, some UI clean up.
+   1.1 Some UI clean up, corrected error in parameter estimation
    1.0 Corrected formula, cleaned up UI, changed variable names
 
 # Tags are comma separated with spaces allowed

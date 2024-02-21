@@ -235,9 +235,6 @@ class Altitudecorrector:
         script=self.dlg.teRscript.toPlainText()
         scriptlines=script.split("\n")
         scriptlines[0]='filename="{}"'.format(fileName)
-        scriptlines[0] = 'Do not use this at the moment'
-        # Todo set water0 and waterslopw
-        # nlsdata=nls(measure ~ (measure0-waterslope-water0)*exp(alpha*altitude)+water0+waterslope*altitude,data=land_doserate,start=list(alpha=-0.006,measure0=1))
         self.dlg.teRscript.setText('\n'.join(scriptlines))
         
         features=layer.getFeatures()
@@ -284,7 +281,7 @@ class Altitudecorrector:
         #self.dlg.pbRun.clicked.connect(self.plotdata)
         self.dlg.pbRun.clicked.connect(self.overlay)
         self.dlg.pbSave.clicked.connect(self.savedata)
-        
+        self.dlg.tabWidget.setCurrentIndex(0)
         # will be set False in run()
         self.first_start = True
         self.updatemeasfields()

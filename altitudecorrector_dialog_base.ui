@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>4</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -50,8 +50,8 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>511</width>
-       <height>221</height>
+       <width>481</width>
+       <height>191</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -65,8 +65,8 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>491</width>
-        <height>181</height>
+        <width>440</width>
+        <height>171</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout" rowstretch="15,15,15,15,0">
@@ -234,7 +234,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>120</y>
+       <y>160</y>
        <width>191</width>
        <height>18</height>
       </rect>
@@ -247,7 +247,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>40</y>
+       <y>80</y>
        <width>171</width>
        <height>18</height>
       </rect>
@@ -260,7 +260,7 @@
      <property name="geometry">
       <rect>
        <x>210</x>
-       <y>110</y>
+       <y>150</y>
        <width>113</width>
        <height>32</height>
       </rect>
@@ -273,7 +273,7 @@
      <property name="geometry">
       <rect>
        <x>210</x>
-       <y>30</y>
+       <y>70</y>
        <width>113</width>
        <height>32</height>
       </rect>
@@ -286,7 +286,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>80</y>
+       <y>120</y>
        <width>121</width>
        <height>18</height>
       </rect>
@@ -299,7 +299,7 @@
      <property name="geometry">
       <rect>
        <x>210</x>
-       <y>70</y>
+       <y>110</y>
        <width>113</width>
        <height>32</height>
       </rect>
@@ -340,30 +340,30 @@
       <string>Formula :</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_8">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>160</y>
-       <width>191</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Land at 1m:</string>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="leLand1m">
      <property name="geometry">
       <rect>
        <x>210</x>
-       <y>150</y>
+       <y>190</y>
        <width>113</width>
        <height>32</height>
       </rect>
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>200</y>
+       <width>191</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Land at 0m:</string>
      </property>
     </widget>
    </widget>
@@ -391,9 +391,16 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;filename=&amp;lt;Save data file first&amp;gt;&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;altdata=read.csv(filename,sep='\t',header=TRUE)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;water=altdata[altdata$type==&amp;quot;Water&amp;quot;,]&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;waterparams= glm(water$measure ~ water$altitude)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;waterslope = summary(waterparams)$coefficients[2,1]&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;water0 = summary(waterparams)$coefficients[1,1]&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;land=altdata[altdata$type==&amp;quot;Land&amp;quot;,]&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;nlsdata=nls(measure ~ ntb+(measure0-ntb)*exp(alpha*altitude),data=land,start=list(alpha=-0.01,ntb=4,measure0=30))&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;nlsdata&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;land$measadjust=land$measure-(waterslope*land$altitude+water0)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;landparams=nls(measadjust ~ (measure0)*exp(alpha*altitude),data=land,start=list(alpha=-0.01,measure0=30))&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;alpha = summary(landparams)$coefficients[1,1]&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;measure0 =  summary(landparams)$coefficients[2,1]&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;cat(&amp;quot;Parameters:\nwater0m:&amp;quot;,water0,&amp;quot;\nwaterslope:&amp;quot;,waterslope,&amp;quot;\nalpha:&amp;quot;,alpha,&amp;quot;\n\nFor info, not used in formula:\nmeasure at surface: &amp;quot;,measure0+water0,&amp;quot;\n&amp;quot;)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="acceptRichText">
