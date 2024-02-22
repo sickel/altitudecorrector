@@ -6,7 +6,7 @@
 name=Altitudecorrector
 qgisMinimumVersion=3.0
 description=Calculates altitude correction for airborne gamma spectroemtry data
-version=1.2
+version=1.25
 author=Morten Sickel
 email=morten@sickel.net
 

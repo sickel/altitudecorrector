@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>20</y>
      <width>541</width>
      <height>361</height>
     </rect>
@@ -230,87 +230,6 @@
     <attribute name="title">
      <string>Fit data</string>
     </attribute>
-    <widget class="QLabel" name="label_7">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>160</y>
-       <width>191</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Water at 0m:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_9">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>80</y>
-       <width>171</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Attenuation over land :</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="leNTB">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>150</y>
-       <width>113</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="leAlpha">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>70</y>
-       <width>113</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_11">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>120</y>
-       <width>121</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Slope, waterdata :</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="leWaterSlope">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>110</y>
-       <width>113</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="leFormula">
      <property name="geometry">
       <rect>
@@ -340,31 +259,76 @@
       <string>Formula :</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="leLand1m">
+    <widget class="QWidget" name="gridLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>190</y>
-       <width>113</width>
-       <height>32</height>
+       <x>80</x>
+       <y>70</y>
+       <width>301</width>
+       <height>111</height>
       </rect>
      </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_8">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>200</y>
-       <width>191</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Land at 0m:</string>
-     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Attenuation over land :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="leAlpha">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Water at 0m:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="leWaterSlope">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Slope, waterdata :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="leWater0">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="leLand1m">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Land at 0m:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_4">
@@ -396,11 +360,10 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;water0 = summary(waterparams)$coefficients[1,1]&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;land=altdata[altdata$type==&amp;quot;Land&amp;quot;,]&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;land$measadjust=land$measure-(waterslope*land$altitude+water0)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;landparams=nls(measadjust ~ (measure0)*exp(alpha*altitude),data=land,start=list(alpha=-0.01,measure0=30))&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;landparams=nls(measadjust ~ (measure0)*exp(alpha*altitude), data=land, start=list(alpha=-0.01,measure0=30))&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;alpha = summary(landparams)$coefficients[1,1]&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;measure0 =  summary(landparams)$coefficients[2,1]&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;cat(&amp;quot;Parameters:\nwater0m:&amp;quot;,water0,&amp;quot;\nwaterslope:&amp;quot;,waterslope,&amp;quot;\nalpha:&amp;quot;,alpha,&amp;quot;\n\nFor info, not used in formula:\nmeasure at surface: &amp;quot;,measure0+water0,&amp;quot;\n&amp;quot;)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;cat(&amp;quot;Parameters:\nwater0m:&amp;quot;, water0, &amp;quot;\nwaterslope:&amp;quot;, waterslope, &amp;quot;\nalpha:&amp;quot;, alpha, &amp;quot;\n\nFor info, not used in formula:\nmeasure at surface:&amp;quot;, measure0+water0, '\n\nFormula: \naltitudecorrection(&amp;quot;&amp;lt;valuefield&amp;gt;&amp;quot;, &amp;quot;&amp;lt;altitudefield&amp;gt;&amp;quot;,', water0, ',', waterslope, ',', alpha,&amp;quot;)\n\n&amp;quot;)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="acceptRichText">

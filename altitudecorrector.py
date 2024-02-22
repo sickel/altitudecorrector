@@ -429,7 +429,7 @@ class Altitudecorrector:
         water0 = round(waterfit[1],6)
         ntb1 = water0+waterslope # ntb @ 1 meter
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_water0',water0)
-        self.dlg.leNTB.setText(str(water0))
+        self.dlg.leWater0.setText(str(water0))
         calibdata=[]
         for idx,meas in enumerate(self.landdata[1]):
             # Calculates the value from the terrestrial radiation. 
@@ -452,7 +452,6 @@ class Altitudecorrector:
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_alpha',float(alpha)) # params[1])
         valuefield = self.dlg.fcbMeasure.currentField()
         altitudefield = self.dlg.fcbAltitude.currentField()
-        
         formulastring = f'altitudecorrection("{valuefield}", "{altitudefield}", {water0}, {round(waterfit[0],6)}, {round(alpha,6)})'
         self.dlg.leFormula.setText(formulastring)
         # R function: nlsdata=nls(measure ~ (measure0-waterslope-water0)*exp(alpha*altitude)+water0+waterslope*altitude,data=land_doserate,start=list(alpha=-0.006,measure0=1))                                    
