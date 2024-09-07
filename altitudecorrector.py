@@ -181,15 +181,17 @@ class Altitudecorrector:
     def fit(self,data,log=False):
         x=numpy.array(data[0])
         y=numpy.array(data[1])
-        if log:
-            fit=numpy.polyfit(x, numpy.log(y), 1, w=numpy.sqrt(y))
-            print(fit)
-            fit=numpy.polyfit(x, numpy.log(y), 1, )
-            print(fit)
-        else:
-            fit=numpy.polyfit(x, y, 1)
-        return(fit)
-    
+        try:
+            if log:
+                fit=numpy.polyfit(x, numpy.log(y), 1, w=numpy.sqrt(y))
+                print(fit)
+                fit=numpy.polyfit(x, numpy.log(y), 1, )
+                print(fit)
+            else:
+                fit=numpy.polyfit(x, y, 1)
+            return(fit)
+        except:
+            return(None)
     
     def plotdata(self):
         """
@@ -202,11 +204,12 @@ class Altitudecorrector:
                    "Atitude correction", "Overlay layer does not exist - run overlay",
                     level=Qgis.Critical, duration=3)
             return
-        
-        self.waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())       
         self.landdata=self.extractdata(caliblayer,self.dlg.leLand.text())
-        self.altplot(self.landdata,self.dlg.gwLand)
-        self.altplot(self.waterdata,self.dlg.gwWater)
+        if len(self.landdata[0]) >=2:
+            self.altplot(self.landdata,self.dlg.gwLand)
+        self.waterdata=self.extractdata(caliblayer,self.dlg.leWater.text())       
+        if len(self.waterdata[0]) >=2:
+            self.altplot(self.waterdata,self.dlg.gwWater)
         # "Canned" parameters
         # ntb=4.284670
         # ntbfactor=0.001743
@@ -320,9 +323,9 @@ class Altitudecorrector:
                 self.measure.append(attrs[valueidx])
         if len(self.measure) < 2:
             self.iface.messageBar().pushMessage(
-                   "Atitude correction", "Too few points found for altitude correction",
+                   "Atitude correction", f"Too few points found for altitude correction {key}, have you selected the right fields?",
                     level=Qgis.Warning, duration=3)
-            
+         
         return([self.altitude,self.measure])
     
     
@@ -409,6 +412,7 @@ class Altitudecorrector:
     def fit_curve(self):
         """
         Uses the water- and land data to calculate parameters to use for altitude correction
+        
         """
         try:
           import numpy as np
@@ -422,6 +426,11 @@ class Altitudecorrector:
         # https://swharden.com/blog/2020-09-24-python-exponential-fit/
         # 
         waterfit=self.fit(self.waterdata)
+        if waterfit is None:
+            self.iface.messageBar().pushMessage(
+                   "Atitude correction", "Cannot fit waterdata",
+                    level=Qgis.Critical, duration=3)
+            return
         # A linear fit 
         waterslope = round(waterfit[0],6)
         QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'altitudecorrection_waterslope',waterslope)
